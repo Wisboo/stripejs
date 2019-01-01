@@ -1,6 +1,5 @@
 const Stripe = require('./stripe.js');
-
-const stripeWrapper = angular.module('wisboo.stripejs-wrapper')
+const wisbooStripe = angular.module('wisboo.stripejs-wrapper')
   .provider('stripe', function () {
     this.apiKey = null;
 
@@ -25,3 +24,4 @@ const stripeWrapper = angular.module('wisboo.stripejs-wrapper')
       };
     }]
   });
+export { wisbooStripe };

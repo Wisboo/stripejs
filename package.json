@@ -1,0 +1,25 @@
+{
+  "name": "wisboo-stripejs",
+  "version": "1.0.0",
+  "description": "AngularJS wrapper for StripeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wisboo/stripejs.git"
+  },
+  "author": "Valentina Maldonado <vmaldonado@wisboo.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wisboo/stripejs/issues"
+  },
+  "homepage": "https://github.com/Wisboo/stripejs#readme",
+  "devDependencies": {
+    "rollup": "^1.0.0"
+  },
+  "dependencies": {
+    "angular": "^1.7.5"
+  }
+}

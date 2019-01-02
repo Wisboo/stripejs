@@ -1,6 +1,6 @@
 {
   "name": "wisboo-stripejs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AngularJS wrapper for StripeJS",
   "main": "index.js",
   "scripts": {

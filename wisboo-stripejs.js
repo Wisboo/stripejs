@@ -1,10 +1,13 @@
 const wisbooStripe = angular.module('wisboo.stripejs-wrapper', [])
   .provider('stripe', function () {
     this.loadStripeScript = () => {
-      if (!Stripe) {
+      if (!this.stripe) {
         const script = document.createElement('script');
         script.async = true;
         script.src = 'https://js.stripe.com/v3';
+        script.onload = () => {
+          this.stripe = window.Stripe;
+        };
         document.body.appendChild(script);
       }
     };
@@ -16,6 +19,9 @@ const wisbooStripe = angular.module('wisboo.stripejs-wrapper', [])
     };
 
     this.$get = () => {
+      if (this.stripe) {
+        return this.stripe(this.apiKey);
+      }
       return Stripe(this.apiKey);
     };
   })

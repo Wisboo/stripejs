@@ -1,5 +1,5 @@
 const Stripe = require('./stripe.js');
-const wisbooStripe = angular.module('wisboo.stripejs-wrapper')
+const wisbooStripe = angular.module('wisboo.stripejs-wrapper', [])
   .provider('stripe', function () {
     this.apiKey = null;
 
@@ -10,7 +10,8 @@ const wisbooStripe = angular.module('wisboo.stripejs-wrapper')
     this.$get = () => {
       return Stripe(this.apiKey);
     };
-  }).component('stripeCreditCardInput', {
+  })
+  .component('stripeCreditCardInput', {
     bindings: {
       instance: '<'
     },
@@ -24,4 +25,4 @@ const wisbooStripe = angular.module('wisboo.stripejs-wrapper')
       };
     }]
   });
-export { wisbooStripe };
+module.exports = wisbooStripe;

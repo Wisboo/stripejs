@@ -2,18 +2,18 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function StripeProvider($window, $document, $q) {
+function StripeProvider() {
   var _this = this;
 
   var stripePromise;
 
-  var loadStripeScript = function loadStripeScript() {
+  var loadStripeScript = function loadStripeScript($window, $document, $q) {
     if (!!_this.stripe) {
       return $q.resolve(_this.stripe);
     }
 
-    if (!$window.$StripeLoading) {
-      $window.$StripeLoading = true;
+    if (!window.$StripeLoading) {
+      window.$StripeLoading = true;
       var deferred = $q.defer();
       var script = $document[0].createElement('script');
       script.async = true;
@@ -42,16 +42,15 @@ function StripeProvider($window, $document, $q) {
     _this.apiKey = apiKey;
   };
 
-  this.$get = function () {
-    return loadStripeScript().then(function (Stripe) {
+  this.$get = ['$window', '$document', '$q', function ($window, $document, $q) {
+    return loadStripeScript($window, $document, $q).then(function (Stripe) {
       return Stripe(_this.key);
     }, function () {
       return {};
     });
-  };
+  }];
 }
 
-StripeProvider.$inject = ['$window', '$document', '$q'];
 var stripeCreditCardComponent = {
   bindings: {
     instance: '<'

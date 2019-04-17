@@ -6,8 +6,13 @@ function StripeProvider() {
   var _this = this;
 
   var stripePromise;
+  this.apiKey = null;
 
-  var loadStripeScript = function loadStripeScript($window, $document, $q) {
+  this.setApiKey = function (apiKey) {
+    _this.apiKey = apiKey;
+  };
+
+  var loadStripeScript = function loadStripeScript($q) {
     if (!!_this.stripe) {
       return $q.resolve(_this.stripe);
     }
@@ -15,39 +20,38 @@ function StripeProvider() {
     if (!window.$StripeLoading) {
       window.$StripeLoading = true;
       var deferred = $q.defer();
-      var script = $document[0].createElement('script');
+      var script = document.createElement('script');
       script.async = true;
       script.src = 'https://js.stripe.com/v3';
 
       script.onload = function () {
-        _this.stripe = $window.Stripe;
-        $window.$StripeLoading = false;
+        _this.stripe = window.Stripe(_this.apiKey);
+        window.$StripeLoading = false;
         deferred.resolve(_this.stripe);
       };
 
       script.onerror = function () {
-        $window.$StripeLoading = false;
+        window.$StripeLoading = false;
+        deferred.reject();
       };
 
-      $document[0].body.appendChild(script);
+      document.body.appendChild(script);
       return stripePromise = deferred.promise;
     }
 
     return $q.when(stripePromise);
   };
 
-  this.apiKey = null;
-
-  this.setApiKey = function (apiKey) {
-    _this.apiKey = apiKey;
-  };
-
-  this.$get = ['$window', '$document', '$q', function ($window, $document, $q) {
-    return loadStripeScript($window, $document, $q).then(function (Stripe) {
-      return Stripe(_this.key);
-    }, function () {
-      return {};
-    });
+  this.$get = ['$q', function ($q) {
+    return {
+      createCard: function createCard(options) {
+        return loadStripeScript($q).then(function (Stripe) {
+          return $q.resolve(Stripe.elements().create('card', options));
+        }, function () {
+          return $q.reject();
+        });
+      }
+    };
   }];
 }
 

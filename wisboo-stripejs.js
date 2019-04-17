@@ -42,19 +42,22 @@ function StripeProvider ($window, $document, $q) {
 }
 StripeProvider.$inject = ['$window', '$document', '$q'];
 
-const wisbooStripe = angular.module('wisboo.stripejs-wrapper', [])
-  .provider('stripe', StripeProvider)
-  .component('stripeCreditCardInput', {
-    bindings: {
-      instance: '<'
-    },
-    controller: ['$element', function ($element) {
-      this.$onInit = () => {
-        this.instance.mount($element[0]);
-      };
+const stripeCreditCardComponent = {
+  bindings: {
+    instance: '<'
+  },
+  controller: ['$element', function ($element) {
+    this.$onInit = () => {
+      this.instance.mount($element[0]);
+    };
 
-      this.$onDestroy = () => {
-        this.instance.destroy();
-      };
-    }]
-  });
+    this.$onDestroy = () => {
+      this.instance.destroy();
+    };
+  }]
+};
+
+const wisbooStripe = angular.module('wisboo.stripejs-wrapper', [])
+                            .provider('stripe', StripeProvider)
+                            .component('stripeCreditCardInput', stripeCreditCardComponent);
+export { stripeCreditCardComponent };

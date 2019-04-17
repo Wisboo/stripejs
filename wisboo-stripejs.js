@@ -1,13 +1,13 @@
-function StripeProvider ($window, $document, $q) {
+function StripeProvider () {
   let stripePromise;
 
-  const loadStripeScript = () => {
+  const loadStripeScript = ($window, $document, $q) => {
     if (!!this.stripe) {
       return $q.resolve(this.stripe);
     }
 
-    if (!$window.$StripeLoading) {
-      $window.$StripeLoading = true;
+    if (!window.$StripeLoading) {
+      window.$StripeLoading = true;
       const deferred = $q.defer();
       const script = $document[0].createElement('script');
       script.async = true;
@@ -32,15 +32,14 @@ function StripeProvider ($window, $document, $q) {
     this.apiKey = apiKey;
   };
 
-  this.$get = () => {
-    return loadStripeScript().then(Stripe => {
+  this.$get = ['$window', '$document', '$q', ($window, $document, $q) => {
+    return loadStripeScript($window, $document, $q).then(Stripe => {
       return Stripe(this.key);
     }, () => {
       return {};
     });
-  };
+  }];
 }
-StripeProvider.$inject = ['$window', '$document', '$q'];
 
 const stripeCreditCardComponent = {
   bindings: {

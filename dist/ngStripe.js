@@ -50,6 +50,13 @@ function StripeProvider() {
         }, function () {
           return $q.reject();
         });
+      },
+      createToken: function createToken(cardElement, options) {
+        return loadStripeScript($q).then(function (Stripe) {
+          return Stripe.createToken(cardElement, options);
+        }, function () {
+          return $q.reject();
+        });
       }
     };
   }];

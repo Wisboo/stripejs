@@ -40,6 +40,11 @@ function StripeProvider () {
         }, function () {
           return $q.reject();
         });
+      },
+      createToken: (cardElement, options) => {
+        return loadStripeScript($q).then(Stripe => {
+          return Stripe.createToken(cardElement, options);
+        }, () => $q.reject());
       }
     };
   }];

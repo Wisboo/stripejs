@@ -7,8 +7,8 @@ function StripeProvider () {
   };
 
   const loadStripeScript = ($q) => {
-    if (!!this.stripe) {
-      return $q.resolve(this.stripe);
+    if (!!window.Stripe) {
+      return $q.resolve(window.Stripe);
     }
 
     if (!window.$StripeLoading) {
@@ -18,12 +18,11 @@ function StripeProvider () {
       script.async = true;
       script.src = 'https://js.stripe.com/v3';
       script.onload = () => {
-        this.stripe = window.Stripe(this.apiKey);
         window.$StripeLoading = false;
-        deferred.resolve(this.stripe);
+        deferred.resolve(window.Stripe);
       };
       script.onerror = () => {
-        window.$StripeLoading = false;
+        delete window.$StripeLoading;
         deferred.reject();
       };
       document.body.appendChild(script);
@@ -36,14 +35,19 @@ function StripeProvider () {
     return {
       createCard: (options) => {
         return loadStripeScript($q).then(Stripe => {
-          return $q.resolve(Stripe.elements().create('card', options));
+          return $q.resolve(Stripe(this.apiKey).elements().create('card', options));
         }, function () {
           return $q.reject();
         });
       },
       createToken: (cardElement, options) => {
         return loadStripeScript($q).then(Stripe => {
-          return Stripe.createToken(cardElement, options);
+          return Stripe(this.apiKey).createToken(cardElement, options);
+        }, () => $q.reject());
+      },
+      redirectToCheckout: (accountId, sessionId) => {
+        return loadStripeScript($q).then(Stripe => {
+          return Stripe(this.apiKey, { stripeAccount: accountId }).redirectToCheckout({ sessionId });
         }, () => $q.reject());
       }
     };
@@ -68,4 +72,4 @@ const stripeCreditCardComponent = {
 const wisbooStripe = angular.module('wisboo.stripejs-wrapper', [])
                             .provider('stripe', StripeProvider)
                             .component('stripeCreditCardInput', stripeCreditCardComponent);
-export { stripeCreditCardComponent };
+export { wisbooStripe, stripeCreditCardComponent };

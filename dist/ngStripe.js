@@ -13,8 +13,8 @@ function StripeProvider() {
   };
 
   var loadStripeScript = function loadStripeScript($q) {
-    if (!!_this.stripe) {
-      return $q.resolve(_this.stripe);
+    if (!!window.Stripe) {
+      return $q.resolve(window.Stripe);
     }
 
     if (!window.$StripeLoading) {
@@ -25,13 +25,12 @@ function StripeProvider() {
       script.src = 'https://js.stripe.com/v3';
 
       script.onload = function () {
-        _this.stripe = window.Stripe(_this.apiKey);
         window.$StripeLoading = false;
-        deferred.resolve(_this.stripe);
+        deferred.resolve(window.Stripe);
       };
 
       script.onerror = function () {
-        window.$StripeLoading = false;
+        delete window.$StripeLoading;
         deferred.reject();
       };
 
@@ -43,17 +42,30 @@ function StripeProvider() {
   };
 
   this.$get = ['$q', function ($q) {
+    var _this2 = this;
+
     return {
       createCard: function createCard(options) {
         return loadStripeScript($q).then(function (Stripe) {
-          return $q.resolve(Stripe.elements().create('card', options));
+          return $q.resolve(Stripe(_this2.apiKey).elements().create('card', options));
         }, function () {
           return $q.reject();
         });
       },
       createToken: function createToken(cardElement, options) {
         return loadStripeScript($q).then(function (Stripe) {
-          return Stripe.createToken(cardElement, options);
+          return Stripe(_this2.apiKey).createToken(cardElement, options);
+        }, function () {
+          return $q.reject();
+        });
+      },
+      redirectToCheckout: function redirectToCheckout(accountId, sessionId) {
+        return loadStripeScript($q).then(function (Stripe) {
+          return Stripe(_this2.apiKey, {
+            stripeAccount: accountId
+          }).redirectToCheckout({
+            sessionId: sessionId
+          });
         }, function () {
           return $q.reject();
         });
@@ -67,17 +79,18 @@ var stripeCreditCardComponent = {
     instance: '<'
   },
   controller: ['$element', function ($element) {
-    var _this2 = this;
+    var _this3 = this;
 
     this.$onInit = function () {
-      _this2.instance.mount($element[0]);
+      _this3.instance.mount($element[0]);
     };
 
     this.$onDestroy = function () {
-      _this2.instance.destroy();
+      _this3.instance.destroy();
     };
   }]
 };
 var wisbooStripe = angular.module('wisboo.stripejs-wrapper', []).provider('stripe', StripeProvider).component('stripeCreditCardInput', stripeCreditCardComponent);
 
 exports.stripeCreditCardComponent = stripeCreditCardComponent;
+exports.wisbooStripe = wisbooStripe;

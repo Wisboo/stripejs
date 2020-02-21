@@ -46,7 +46,9 @@ function StripeProvider() {
 
     return {
       instance: function instance(options) {
-        return loadStripeScript($q)(_this2.apiKey, options);
+        return loadStripeScript($q).then(function (Stripe) {
+          return Stripe(_this2.apiKey, options);
+        });
       },
       createCard: function createCard(options) {
         return loadStripeScript($q).then(function (Stripe) {

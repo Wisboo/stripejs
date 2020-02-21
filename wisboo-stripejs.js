@@ -33,6 +33,9 @@ function StripeProvider () {
 
   this.$get = ['$q', function ($q) {
     return {
+      instance: () => {
+        return loadStripeScript($q);
+      },
       createCard: (options) => {
         return loadStripeScript($q).then(Stripe => {
           return $q.resolve(Stripe(this.apiKey).elements().create('card', options));

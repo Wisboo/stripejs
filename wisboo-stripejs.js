@@ -33,8 +33,8 @@ function StripeProvider () {
 
   this.$get = ['$q', function ($q) {
     return {
-      instance: () => {
-        return loadStripeScript($q);
+      instance: (options) => {
+        return loadStripeScript($q)(this.apiKey, options);
       },
       createCard: (options) => {
         return loadStripeScript($q).then(Stripe => {
